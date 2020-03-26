@@ -165,6 +165,28 @@ var uiController = (function(){
         expensesPercLabel : '.item__percentage'
     };
 
+
+    var formatNumber =  function(num, type){
+        /*  + or - before num
+        add decimal points
+        comma separating thousands */
+        var numSplit, int, dec, sign;
+
+        num = Math.abs(num);
+        num = num.toFixed(2);
+
+        numSplit =  num.split('.');
+
+        int = numSplit[0];
+        if(int.length >3){
+            int = int.substr(0,int.length - 3) + ',' + int.substr(int.length - 3, 3);  // input = 2310  , then result = 2,310
+        }
+
+        dec = numSplit[1];
+
+        return (type === 'exp' ? '-' : '+') + ' ' + int + '.' + dec;
+    };
+
     return {
         getInput : function(){
             return {
@@ -172,11 +194,6 @@ var uiController = (function(){
                 description :  document.querySelector(DomStrings.inputDescription).value,
                 value : parseFloat(document.querySelector(DomStrings.inputValue).value),   // converting string to float value to apply calculation
             };
-        },
-
-
-        getDomStrings : function(){
-            return DomStrings;
         },
 
         
@@ -198,7 +215,7 @@ var uiController = (function(){
             //Replace the placeholder text with the data received from object
             newHtml = html.replace('%id%', obj.id);
             newHtml = newHtml.replace('%description%', obj.description);
-            newHtml = newHtml.replace('%value%', obj.value);
+            newHtml = newHtml.replace('%value%', formatNumber(obj.value, type));
 
             //Insert HTML in DOM
             document.querySelector(element).insertAdjacentHTML('beforeend', newHtml);
@@ -254,7 +271,11 @@ var uiController = (function(){
                     curr.textContent = '---';
                 }
             });
-        }
+        },
+
+        getDomStrings : function(){
+            return DomStrings;
+        },
         
     };
 
